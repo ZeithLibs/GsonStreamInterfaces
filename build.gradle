@@ -1,0 +1,77 @@
+plugins {
+    id 'java'
+    id 'maven-publish'
+}
+
+group = 'org.zeith'
+java {
+    sourceCompatibility = targetCompatibility = JavaVersion.VERSION_17
+}
+
+repositories {
+    mavenCentral()
+    maven {
+        name = "Zeitheron Maven"
+        url = "https://maven.zeith.org"
+    }
+}
+
+dependencies {
+    implementation "com.google.code.gson:gson:$gson"
+    implementation "org.zeith.libs:GsonStream:$gson_stream"
+
+    ////// UTILITY STUFF //////
+    compileOnly "org.projectlombok:lombok:${lombok}"
+    annotationProcessor "org.projectlombok:lombok:${lombok}"
+    ///////////////////////////
+
+    testImplementation platform('org.junit:junit-bom:5.10.0')
+    testImplementation 'org.junit.jupiter:junit-jupiter'
+}
+
+test {
+    useJUnitPlatform()
+}
+
+tasks.register('srcJar', Jar) {
+    dependsOn classes
+    from sourceSets.main.allSource
+    archiveClassifier = 'sources'
+}
+
+tasks.register('javadocJar', Jar) {
+    dependsOn classes
+    from javadoc
+    archiveClassifier = 'javadoc'
+}
+
+artifacts {
+    archives srcJar
+    archives javadocJar
+}
+
+publishing {
+    publications {
+        maven(MavenPublication) {
+            groupId = 'org.zeith.libs'
+            artifactId = 'GsonStreamInterfaces'
+            from components.java
+
+            pom {
+                name = 'GsonStreamInterfaces'
+                description = 'Exporting/importing interfaces through Gson Streams.'
+                dependencies {
+                    implementation "org.zeith.libs:GsonStream:$gson_stream"
+                }
+            }
+
+            artifact srcJar
+            artifact javadocJar
+        }
+    }
+    repositories {
+        maven {
+            url System.env.MAVEN_URL
+        }
+    }
+}
