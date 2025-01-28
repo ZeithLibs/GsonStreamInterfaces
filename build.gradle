@@ -59,7 +59,7 @@ publishing {
 
             pom {
                 name = 'GsonStreamInterfaces'
-                description = 'Exporting/importing interfaces through Gson Streams.'
+                description = 'Exporting/importing interfaces through GsonStreams.'
                 dependencies {
                     implementation "org.zeith.libs:GsonStream:$gson_stream"
                 }
