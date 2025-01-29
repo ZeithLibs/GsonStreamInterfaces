@@ -31,8 +31,11 @@ public class InterfaceRegistry
 	
 	private final boolean requireExportAnnotation;
 	
-	public InterfaceRegistry(boolean server, boolean requireExportAnnotation, Executor exportListener, MultiJsonChannel channel)
+	private final TypeResolver loader;
+	
+	public InterfaceRegistry(TypeResolver loader, boolean server, boolean requireExportAnnotation, Executor exportListener, MultiJsonChannel channel)
 	{
+		this.loader = loader;
 		this.server = server;
 		this.requireExportAnnotation = requireExportAnnotation;
 		this.exportListener = exportListener;
@@ -69,6 +72,8 @@ public class InterfaceRegistry
 	@Synchronized
 	public <T> T imported(String guid, Class<T> itf)
 	{
+		if(guid == null || guid.isBlank() || itf == null)
+			return null;
 		if(!itf.isInterface())
 			throw new IllegalArgumentException(itf + " is not an interface.");
 		return itf.cast(allImports.computeIfAbsent(guid, key ->
@@ -124,7 +129,7 @@ public class InterfaceRegistry
 		{
 			try
 			{
-				imported(guid, type.resolve());
+				imported(guid, type.resolve(loader));
 			} catch(ClassNotFoundException e)
 			{
 				throw new RuntimeException(e);

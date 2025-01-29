@@ -18,4 +18,10 @@ public record Type(String c)
 	{
 		return loader.loadClass(c);
 	}
+	
+	public Class<?> resolve(TypeResolver loader)
+			throws ClassNotFoundException
+	{
+		return loader.loadClass(c);
+	}
 }
